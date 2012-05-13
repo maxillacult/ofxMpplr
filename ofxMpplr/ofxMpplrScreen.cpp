@@ -62,25 +62,25 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 	string message = "";
 	
 	glPushMatrix();
-	glTranslatef(x, y, 0.0f);
-	buffer.getTextureReference().bind();
-	glBegin(GL_TRIANGLES);
-	for (int i = 0;i < Vertexes.size();i++){
-		glTexCoord2f(Texcoord[i]->point[0]*width,
-					 Texcoord[i]->point[1]*height);
-		glVertex2f(Vertexes[i]->point[0]*width, 
-				   Vertexes[i]->point[1]*height);
-		glTexCoord2f(Texcoord[i]->point[2]*width,
-					 Texcoord[i]->point[3]*height);
-		glVertex2f(Vertexes[i]->point[2]*width, 
-				   Vertexes[i]->point[3]*height);
-		glTexCoord2f(Texcoord[i]->point[4]*width,
-					 Texcoord[i]->point[5]*height);
-		glVertex2f(Vertexes[i]->point[4]*width, 
-				   Vertexes[i]->point[5]*height);
-	}
-	glEnd();
-	buffer.getTextureReference().unbind();
+    glTranslatef(x, y, 0.0f);
+    buffer.getTextureReference().bind();
+      glBegin(GL_TRIANGLES);
+        for (int i = 0;i < Vertexes.size();i++){
+          glTexCoord2f(Texcoord[i]->point[0]*width,
+                       Texcoord[i]->point[1]*height);
+          glVertex2f(Vertexes[i]->point[0]*width, 
+                     Vertexes[i]->point[1]*height);
+          glTexCoord2f(Texcoord[i]->point[2]*width,
+                       Texcoord[i]->point[3]*height);
+          glVertex2f(Vertexes[i]->point[2]*width, 
+                     Vertexes[i]->point[3]*height);
+          glTexCoord2f(Texcoord[i]->point[4]*width,
+                       Texcoord[i]->point[5]*height);
+          glVertex2f(Vertexes[i]->point[4]*width, 
+                     Vertexes[i]->point[5]*height);
+        }
+      glEnd();
+    buffer.getTextureReference().unbind();
 	glPopMatrix();
 	
 	if (bDebug){
@@ -125,7 +125,7 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 					for (int j = 0;j < 3;j++){
 						if (ofDist(Vertexes[i]->point[j*2  ]*width, 
 								   Vertexes[i]->point[j*2+1]*height, 
-								   ofGetMouseX()-x, ofGetMouseY()-y) < 10){
+								   getInMouseX()-x, getInMouseY()-y) < 10){
 							Sub_phase = SUB_POINT_MOVE;
 							ofSetHexColor(0xFF0000);
 							ofNoFill();
@@ -161,7 +161,7 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 					
 					if (ofDist(magnetv[i].x*width, 
 							   magnetv[i].y*height, 
-							   ofGetMouseX()-x, ofGetMouseY()-y) < 10){
+							   getInMouseX()-x, getInMouseY()-y) < 10){
 						Sub_phase = SUB_MAGNET_MOVE;
 						message = "-- Move magnet";
 						ofSetHexColor(0xaa33FF);
@@ -182,10 +182,65 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 		ofFill();
 		glPopMatrix();
 		ofSetHexColor(0xFFFFFF);
-		ofDrawBitmapString(message, ofGetMouseX()+12, ofGetMouseY()+4);
+    
+    cout << "***** " << "getInMouseX() : " << getInMouseX() << " getInMouseY() : " << getInMouseY() << endl;
+		ofDrawBitmapString(message, getInMouseX()+12, getInMouseY()+4);
 	}
-
 }
+
+void ofxMpplrScreen::drawOutPut(float x,float y,float width,float height){
+  glPushMatrix();
+    glTranslatef(x, y, 0.0f);
+      buffer.getTextureReference().bind();
+        glBegin(GL_TRIANGLES);
+          for (int i = 0;i < Vertexes.size();i++){
+            if(ofGetWindowMode() == OF_FULLSCREEN){
+              ofPoint size = ofGetWindowSize();
+              //cout << "size.x : " << size.x << "size.y : " << size.y << endl;
+              
+              glTexCoord2f(Texcoord[i]->point[0]*size.x,
+                           Texcoord[i]->point[1]*size.y);
+              glVertex2f(Vertexes[i]->point[0]*size.x, 
+                         Vertexes[i]->point[1]*size.y);
+              glTexCoord2f(Texcoord[i]->point[2]*size.x,
+                           Texcoord[i]->point[3]*size.y);
+              glVertex2f(Vertexes[i]->point[2]*size.x, 
+                         Vertexes[i]->point[3]*size.y);
+              glTexCoord2f(Texcoord[i]->point[4]*size.x,
+                           Texcoord[i]->point[5]*size.y);
+              glVertex2f(Vertexes[i]->point[4]*size.x, 
+                         Vertexes[i]->point[5]*size.y);
+              
+            }else{
+            glTexCoord2f(Texcoord[i]->point[0]*width,
+                         Texcoord[i]->point[1]*height);
+            glVertex2f(Vertexes[i]->point[0]*width, 
+                       Vertexes[i]->point[1]*height);
+            glTexCoord2f(Texcoord[i]->point[2]*width,
+                         Texcoord[i]->point[3]*height);
+            glVertex2f(Vertexes[i]->point[2]*width, 
+                       Vertexes[i]->point[3]*height);
+            glTexCoord2f(Texcoord[i]->point[4]*width,
+                         Texcoord[i]->point[5]*height);
+            glVertex2f(Vertexes[i]->point[4]*width, 
+                       Vertexes[i]->point[5]*height);
+            }
+          }
+        glEnd();
+      buffer.getTextureReference().unbind();
+	glPopMatrix();
+}
+
+
+
+int ofxMpplrScreen::getInMouseX(){
+  return _mouseX;
+}
+
+int ofxMpplrScreen::getInMouseY(){
+  return _mouseY;
+}
+
 
 void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 	static bool bRectReady = false;
@@ -245,7 +300,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 					for (int j = 0;j < 3;j++){
 						if (ofDist(Texcoord[i]->point[j*2  ]*width, 
 								   Texcoord[i]->point[j*2+1]*height, 
-								   ofGetMouseX()-x, ofGetMouseY()-y) < 10){
+								   getInMouseX()-x, getInMouseY()-y) < 10){
 							message = "-- Move point";
 							Sub_phase = SUB_POINT_MOVE;
 							ofSetHexColor(0xFF0000);
@@ -270,10 +325,10 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 			{
 				message = "-- Make Rectangle";
 				if (ofGetMousePressed() && !bRectReady){
-					if ((win_x < ofGetMouseX())&&(ofGetMouseX() < win_x+win_w)&&
-						(win_y < ofGetMouseY())&&(ofGetMouseY() < win_y+win_h)){
+					if ((win_x < getInMouseX())&&(getInMouseX() < win_x+win_w)&&
+						(win_y < getInMouseY())&&(getInMouseY() < win_y+win_h)){
 						bRectReady = true;
-						rect_top = ofPoint(ofGetMouseX(),ofGetMouseY());
+						rect_top = ofPoint(getInMouseX(),getInMouseY());
 					}
 				}
 				if (!ofGetMousePressed() && bRectReady){
@@ -282,23 +337,23 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 					t.point[0] = MAX(MIN(1.0f,(rect_top.x - x) / width),0);
 					t.point[1] = MAX(MIN(1.0f,(rect_top.y - y) / height),0);
 					t.point[2] = MAX(MIN(1.0f,(rect_top.x - x) / width),0);
-					t.point[3] = MAX(MIN(1.0f,(ofGetMouseY() - y) / height),0);
-					t.point[4] = MAX(MIN(1.0f,(ofGetMouseX() - x) / width),0);
+					t.point[3] = MAX(MIN(1.0f,(getInMouseY() - y) / height),0);
+					t.point[4] = MAX(MIN(1.0f,(getInMouseX() - x) / width),0);
 					t.point[5] = MAX(MIN(1.0f,(rect_top.y - y) / height),0);
 					
 					t2.point[0] = t.point[4];
 					t2.point[1] = t.point[5];
 					t2.point[2] = t.point[2];
 					t2.point[3] = t.point[3];
-					t2.point[4] = MAX(MIN(1.0f,(ofGetMouseX() - x) / width),0);
-					t2.point[5] = MAX(MIN(1.0f,(ofGetMouseY() - y) / height),0);
+					t2.point[4] = MAX(MIN(1.0f,(getInMouseX() - x) / width),0);
+					t2.point[5] = MAX(MIN(1.0f,(getInMouseY() - y) / height),0);
 					makeTriangles(t);
 					makeTriangles(t2);
 				}
 				if (ofGetMousePressed()&&(bRectReady)){
 					ofSetHexColor(0xFFFFFF);
 					ofNoFill();
-					ofRect(rect_top.x - x, rect_top.y - y, ofGetMouseX() - rect_top.x, ofGetMouseY() - rect_top.y);
+					ofRect(rect_top.x - x, rect_top.y - y, getInMouseX() - rect_top.x, getInMouseY() - rect_top.y);
 					ofFill();
 				}
 			}
@@ -323,7 +378,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 					
 					if (ofDist(magnets[i].x*width, 
 								magnets[i].y*height, 
-								ofGetMouseX()-x, ofGetMouseY()-y) < 10){
+								getInMouseX()-x, getInMouseY()-y) < 10){
 						message = "-- Move Magnet";
 						Sub_phase = SUB_MAGNET_MOVE;
 						ofSetHexColor(0xaa33FF);
@@ -340,7 +395,9 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 			}
 			
 			ofSetHexColor(0xFFFFFF);
-			ofDrawBitmapString(message, ofGetMouseX()+12, ofGetMouseY()+4);
+      
+      cout << "***** " << "getInMouseX() : " << getInMouseX() << " getInMouseY() : " << getInMouseY() << endl;
+			ofDrawBitmapString(message, getInMouseX()+12, getInMouseY()+4);
 		}else{
 			ofSetColor(0, 0, 0,100);
 			ofRect(0, 0, width, height);
@@ -355,7 +412,13 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 }
 
 void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
-	if (!bDebug) return;
+  
+  _mouseX = mouse.x;
+  _mouseY = mouse.y;
+  
+  cout<<"helloMpplrScreenPressed " << "x : " << mouse.x << "y : " << mouse.y <<endl;
+	
+  if (!bDebug) return;
 	if (edit_Panel == PANEL_TEX){
 		if (Edit_phase == PHASE_POINT){
 			if (Sub_phase == SUB_POINT_MAKE){
@@ -385,8 +448,8 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 				y2 = Texcoord[i]->point[3];
 				x3 = Texcoord[i]->point[4];
 				y3 = Texcoord[i]->point[5];
-				x4 = (ofGetMouseX() - win_x) / win_w;
-				y4 = (ofGetMouseY() - win_y) / win_h;
+				x4 = (getInMouseX() - win_x) / win_w;
+				y4 = (getInMouseY() - win_y) / win_h;
 				
 				if ((x4*(y1-y2)+x1*(y2-y4)+x2*(y4-y1) > 0) &&
 					(x4*(y2-y3)+x2*(y3-y4)+x3*(y4-y2) > 0) &&
@@ -440,8 +503,8 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 				y2 = Vertexes[i]->point[3];
 				x3 = Vertexes[i]->point[4];
 				y3 = Vertexes[i]->point[5];
-				x4 = (ofGetMouseX() - ver_x) / ver_w;
-				y4 = (ofGetMouseY() - ver_y) / ver_h;
+				x4 = (getInMouseX() - ver_x) / ver_w;
+				y4 = (getInMouseY() - ver_y) / ver_h;
 				
 				if ((x4*(y1-y2)+x1*(y2-y4)+x2*(y4-y1) > 0) &&
 					(x4*(y2-y3)+x2*(y3-y4)+x3*(y4-y2) > 0) &&
@@ -489,6 +552,12 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 }
 
 void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
+  
+  cout<<"helloMpplrScreenDragged " << "x : " << mouse.x << "y : " << mouse.y <<endl;
+  
+  _mouseX = mouse.x;
+  _mouseY = mouse.y;
+  
 		if (!bDebug) return;
 	if (edit_Panel == PANEL_TEX){
 		if (Edit_phase == PHASE_POINT){
@@ -497,7 +566,7 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 					for (int j = 0;j < 3;j++){
 						if (ofDist(Texcoord[i]->point[j*2  ]*win_w, 
 								   Texcoord[i]->point[j*2+1]*win_h, 
-								   ofGetMouseX()-win_x, ofGetMouseY()-win_y) < 10){
+								   getInMouseX()-win_x, getInMouseY()-win_y) < 10){
 							if ((active_point[0] == -1)&&(active_point[1] == -1)){
 								active_point[0] = i;
 								active_point[1] = j;
@@ -567,7 +636,7 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 					for (int j = 0;j < 3;j++){
 						if (ofDist(Vertexes[i]->point[j*2  ]*ver_w, 
 								   Vertexes[i]->point[j*2+1]*ver_h, 
-								   ofGetMouseX()-ver_x, ofGetMouseY()-ver_y) < 10){
+								   getInMouseX()-ver_x, getInMouseY()-ver_y) < 10){
 							if ((active_point[0] == -1)&&(active_point[1] == -1)){
 								active_point[0] = i;
 								active_point[1] = j;
@@ -621,13 +690,19 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 }
 
 void ofxMpplrScreen::mouseMoved(ofMouseEventArgs &mouse){
+  
+  _mouseX = mouse.x;
+  _mouseY = mouse.y;
+  
+  cout<<"helloMpplrScreenMove " << "x : " << mouse.x << "y : " << mouse.y <<endl;
+
 	if ((win_x < mouse.x)&&(mouse.x < win_x+win_w)&&
 		(win_y < mouse.y)&&(mouse.y < win_y+win_h)) edit_Panel = PANEL_TEX;
 	else if ((ver_x < mouse.x)&&(mouse.x < ver_x+ver_w)&&
 			 (ver_y < mouse.y)&&(mouse.y < ver_y+ver_h)) edit_Panel = PANEL_VER;
 	else 
 		edit_Panel = PANEL_NONE;
-
+  
 }
 
 void ofxMpplrScreen::mouseReleased(ofMouseEventArgs &mouse){

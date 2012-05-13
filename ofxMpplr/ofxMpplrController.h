@@ -17,13 +17,13 @@ class ofxMpplrController{
 public:
 	void setup(ofxMpplrScreen* _child);
 	void draw(int x,int y);
-	
-	void mousePressed(ofMouseEventArgs& mouse);
-	void mouseDragged(ofMouseEventArgs& mouse);
-	void mouseMoved(ofMouseEventArgs& mouse);
-	void mouseReleased(ofMouseEventArgs& mouse);
-	void keyPressed(ofKeyEventArgs  &key);
-	void keyReleased(ofKeyEventArgs &key);
+  
+	void    mousePressed(ofMouseEventArgs& mouse);
+	void    mouseDragged(ofMouseEventArgs& mouse);
+	void    mouseMoved(ofMouseEventArgs& mouse);
+	void    mouseReleased(ofMouseEventArgs& mouse);
+	void    keyPressed(ofKeyEventArgs  &key);
+	void    keyReleased(ofKeyEventArgs &key);
 	
 protected:
 	int typeMessage;

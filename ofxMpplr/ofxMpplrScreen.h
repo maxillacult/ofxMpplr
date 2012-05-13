@@ -46,7 +46,9 @@ public:
 	void draw(float x,float y,float width,float height);
 	//Draw rect Image
 	void drawBuffer(float x,float y,float width,float height);
-	
+	//Draw OutPutImage
+  void drawOutPut(float x,float y,float width,float height);
+  
 	//Other sub functions
 	void LoadXML(int num);
 	void SaveXML(int num);
@@ -60,6 +62,9 @@ public:
 	void keyPressed(ofKeyEventArgs  &key);
 	void keyReleased(ofKeyEventArgs &key);
 	
+  int getInMouseX();
+  int getInMouseY();
+  
 	int Edit_phase;
 	int edit_Panel;
 	int Sub_phase;
@@ -77,6 +82,8 @@ protected:
 	float win_x,win_y,win_w,win_h;
 	float ver_x,ver_y,ver_w,ver_h;
 	int mx,my;
+  int _mouseX;
+  int _mouseY;
 	
 	Triangle Stock;
 	deque <Triangle*> Texcoord;
