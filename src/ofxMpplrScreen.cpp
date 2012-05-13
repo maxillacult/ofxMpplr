@@ -183,7 +183,7 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 		glPopMatrix();
 		ofSetHexColor(0xFFFFFF);
     
-    cout << "***** " << "getInMouseX() : " << getInMouseX() << " getInMouseY() : " << getInMouseY() << endl;
+    //cout << "***** " << "getInMouseX() : " << getInMouseX() << " getInMouseY() : " << getInMouseY() << endl;
 		ofDrawBitmapString(message, getInMouseX()+12, getInMouseY()+4);
 	}
 }
@@ -396,7 +396,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 			
 			ofSetHexColor(0xFFFFFF);
       
-      cout << "***** " << "getInMouseX() : " << getInMouseX() << " getInMouseY() : " << getInMouseY() << endl;
+//      cout << "***** " << "getInMouseX() : " << getInMouseX() << " getInMouseY() : " << getInMouseY() << endl;
 			ofDrawBitmapString(message, getInMouseX()+12, getInMouseY()+4);
 		}else{
 			ofSetColor(0, 0, 0,100);
@@ -416,7 +416,7 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
   _mouseX = mouse.x;
   _mouseY = mouse.y;
   
-  cout<<"helloMpplrScreenPressed " << "x : " << mouse.x << "y : " << mouse.y <<endl;
+  //cout<<"helloMpplrScreenPressed " << "x : " << mouse.x << "y : " << mouse.y <<endl;
 	
   if (!bDebug) return;
 	if (edit_Panel == PANEL_TEX){
@@ -553,7 +553,7 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 
 void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
   
-  cout<<"helloMpplrScreenDragged " << "x : " << mouse.x << "y : " << mouse.y <<endl;
+  //cout<<"helloMpplrScreenDragged " << "x : " << mouse.x << "y : " << mouse.y <<endl;
   
   _mouseX = mouse.x;
   _mouseY = mouse.y;
@@ -694,7 +694,7 @@ void ofxMpplrScreen::mouseMoved(ofMouseEventArgs &mouse){
   _mouseX = mouse.x;
   _mouseY = mouse.y;
   
-  cout<<"helloMpplrScreenMove " << "x : " << mouse.x << "y : " << mouse.y <<endl;
+  //cout<<"helloMpplrScreenMove " << "x : " << mouse.x << "y : " << mouse.y <<endl;
 
 	if ((win_x < mouse.x)&&(mouse.x < win_x+win_w)&&
 		(win_y < mouse.y)&&(mouse.y < win_y+win_h)) edit_Panel = PANEL_TEX;
@@ -719,7 +719,7 @@ void ofxMpplrScreen::keyPressed(ofKeyEventArgs &key){
 		}
 	}
 	if (Edit_phase == PHASE_PLATE){
-		if ((active_triangle != -1)&&(key.key == 127)){
+		if ((active_triangle != -1)&&(key.key == 127)&&(Texcoord.size() > 0)&&(Vertexes.size() > 0)){
 			Texcoord.erase(Texcoord.begin()+active_triangle);
 			Vertexes.erase(Vertexes.begin()+active_triangle);
 			active_triangle = -1;
@@ -727,11 +727,12 @@ void ofxMpplrScreen::keyPressed(ofKeyEventArgs &key){
 	}
 	if (Edit_phase == PHASE_MAGNE){
 		if (edit_Panel == PANEL_TEX){
-			if ((active_magnet != -1)&&(key.key == 127)){
+			if ((active_magnet != -1)&&(key.key == 127)&&(magnets.size() > 0)){
+        cout << "magnets.size() : " << magnets.size() << endl;
 				magnets.erase(magnets.begin()+active_magnet);
 			}			
 		}else if (edit_Panel == PANEL_VER){
-			if ((active_magnev != -1)&&(key.key == 127)){
+			if ((active_magnev != -1)&&(key.key == 127)&&(magnetv.size() > 0)){
 				magnetv.erase(magnetv.begin()+active_magnev);
 			}
 		}
