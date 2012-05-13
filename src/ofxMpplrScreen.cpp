@@ -417,7 +417,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 }
 
 void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
-  
+  if(bCanEdit){
   _mousePressed = true;
   _mouseX = mouse.x;
   _mouseY = mouse.y;
@@ -555,10 +555,11 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 	}
 	mx = mouse.x;
 	my = mouse.y;
+  }
 }
 
 void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
-  
+  if(bCanEdit){
   //cout<<"helloMpplrScreenDragged " << "x : " << mouse.x << "y : " << mouse.y <<endl;
   
   _mouseX = mouse.x;
@@ -693,6 +694,7 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 	}
 	mx = mouse.x;
 	my = mouse.y;
+  }
 }
 
 void ofxMpplrScreen::mouseMoved(ofMouseEventArgs &mouse){

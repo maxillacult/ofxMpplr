@@ -15,6 +15,7 @@
 #define PHASE_PLATE 0x03
 #define PHASE_RECTM 0X04
 #define PHASE_MAGNE 0x05
+#define PHASE_NOEDIT 0x06
 
 #define SUB_POINT_MAKE 0x00
 #define SUB_POINT_MOVE 0x01
@@ -72,6 +73,7 @@ public:
 	int loaden;
 	bool bFix;
 	bool bDebug;
+  bool bCanEdit;
 	
 protected:
 	//deques can use param pct of screen width/height 0.0f~1.0f
