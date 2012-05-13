@@ -64,6 +64,7 @@ public:
 	
   int getInMouseX();
   int getInMouseY();
+  bool getInMousePressed();
   
 	int Edit_phase;
 	int edit_Panel;
@@ -84,6 +85,7 @@ protected:
 	int mx,my;
   int _mouseX;
   int _mouseY;
+  bool _mousePressed;
 	
 	Triangle Stock;
 	deque <Triangle*> Texcoord;

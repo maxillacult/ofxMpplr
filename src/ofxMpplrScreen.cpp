@@ -241,6 +241,9 @@ int ofxMpplrScreen::getInMouseY(){
   return _mouseY;
 }
 
+bool ofxMpplrScreen::getInMousePressed(){
+  return _mousePressed;
+}
 
 void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 	static bool bRectReady = false;
@@ -324,14 +327,16 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 			else if(Edit_phase == PHASE_RECTM)
 			{
 				message = "-- Make Rectangle";
-				if (ofGetMousePressed() && !bRectReady){
+        cout << "getInMousePressed : " << getInMousePressed() << endl;
+				if (getInMousePressed() && !bRectReady){
 					if ((win_x < getInMouseX())&&(getInMouseX() < win_x+win_w)&&
 						(win_y < getInMouseY())&&(getInMouseY() < win_y+win_h)){
+            cout << "traceRect "<< endl;
 						bRectReady = true;
 						rect_top = ofPoint(getInMouseX(),getInMouseY());
 					}
 				}
-				if (!ofGetMousePressed() && bRectReady){
+				if (!getInMousePressed() && bRectReady){
 					bRectReady = false;
 					Triangle t,t2;
 					t.point[0] = MAX(MIN(1.0f,(rect_top.x - x) / width),0);
@@ -350,7 +355,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 					makeTriangles(t);
 					makeTriangles(t2);
 				}
-				if (ofGetMousePressed()&&(bRectReady)){
+				if (getInMousePressed()&&(bRectReady)){
 					ofSetHexColor(0xFFFFFF);
 					ofNoFill();
 					ofRect(rect_top.x - x, rect_top.y - y, getInMouseX() - rect_top.x, getInMouseY() - rect_top.y);
@@ -413,6 +418,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 
 void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
   
+  _mousePressed = true;
   _mouseX = mouse.x;
   _mouseY = mouse.y;
   
@@ -708,6 +714,7 @@ void ofxMpplrScreen::mouseMoved(ofMouseEventArgs &mouse){
 void ofxMpplrScreen::mouseReleased(ofMouseEventArgs &mouse){
 	active_point[0] = -1;
 	active_point[1] = -1;
+  _mousePressed = false;
 }
 
 void ofxMpplrScreen::keyPressed(ofKeyEventArgs &key){
