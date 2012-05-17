@@ -56,7 +56,8 @@ public:
 	void SaveXML(int num);
 	void makeTriangles(Triangle tri);
   void makeTriangles(Triangle tri1, Triangle tri2);
-
+  void maxNumber(int num, int mouseX, int mouseY);
+  
 	//Mouse & Key Events
 	void mousePressed(ofMouseEventArgs& mouse);
 	void mouseDragged(ofMouseEventArgs& mouse);
@@ -65,6 +66,7 @@ public:
 	void keyPressed(ofKeyEventArgs  &key);
 	void keyReleased(ofKeyEventArgs &key);
 	
+  
   int getInMouseX();
   int getInMouseY();
   bool getInMousePressed();
@@ -75,6 +77,7 @@ public:
 	int edit_Panel;
 	int Sub_phase;
 	int loaden;
+  int _magnet_radius;
 	bool bFix;
 	bool bDebug;
   bool bCanEdit;
@@ -93,6 +96,9 @@ protected:
   int _mouseX;
   int _mouseY;
   bool _mousePressed;
+  bool _no_more_magnets;
+  int _moving_magnet;
+  int _maximum_moving_magnet;
 	
 	Triangle Stock;
 	deque <Triangle*> Texcoord;

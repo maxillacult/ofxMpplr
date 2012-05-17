@@ -25,6 +25,10 @@ void ofxMpplrScreen::setup(int width, int height){
 	bFix = true;
 	edit_Panel = PANEL_TEX;
 	loaden = -1;
+  _maximum_moving_magnet = 3;
+  _moving_magnet = 0;
+  _no_more_magnets = false;
+  _magnet_radius = 6;
 }
 
 void ofxMpplrScreen::Begin(){
@@ -528,6 +532,7 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 				p.x = (mouse.x - win_x) / win_w;
 				p.y = (mouse.y - win_y) / win_h;
 				magnets.push_back(p);
+        _moving_magnet = 0;
 				active_magnet = magnets.size()-1;
 				for (int i = 0;i < Texcoord.size();i++){
 					for (int j = 0;j < 3;j++){
@@ -546,6 +551,7 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 							   magnets[i].y*win_h, 
 							   mouse.x-win_x, mouse.y-win_y) < 10){
 						active_magnet = i;
+            _moving_magnet = 0;
 					}
 				}
 			}
@@ -616,6 +622,8 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
   if(bCanEdit){
   //cout<<"helloMpplrScreenDragged " << "x : " << mouse.x << "y : " << mouse.y <<endl;
   
+  //maxNumber(3, mouse.x, mouse.y);  
+    
   _mouseX = mouse.x;
   _mouseY = mouse.y;
   
@@ -671,21 +679,27 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 			if ((active_magnet < magnets.size())&&(active_magnet > -1)&&(Sub_phase == SUB_MAGNET_MOVE)){
 				magnets[active_magnet].x += (mouse.x - mx) / win_w;
 				magnets[active_magnet].y += (mouse.y - my) / win_h;
-				
-				for (int i = 0;i < Texcoord.size();i++){
-					for (int j = 0;j < 3;j++){
-						if (ofDist(Texcoord[i]->point[j*2  ]*win_w, 
-								   Texcoord[i]->point[j*2+1]*win_h, 
-								   mouse.x-win_x, mouse.y-win_y) < 20){
-							Texcoord[i]->point[j*2  ] = magnets[active_magnet].x;
-							Texcoord[i]->point[j*2+1] = magnets[active_magnet].y;
-							if (bFix){
-								Vertexes[i]->point[j*2  ] = magnets[active_magnet].x;
-								Vertexes[i]->point[j*2+1] = magnets[active_magnet].y;
-							}
-						}
-					}
-				}
+
+        if(!_no_more_magnets){
+          //cout << "max ok : " << _moving_magnet << " < " << _maximum_moving_magnet << endl;
+          for (int i = 0;i < Texcoord.size();i++){
+            for (int j = 0;j < 3;j++){
+              if (ofDist(Texcoord[i]->point[j*2  ]*win_w, 
+                       Texcoord[i]->point[j*2+1]*win_h, 
+                       mouse.x-win_x, mouse.y-win_y) < _magnet_radius){
+                
+                                cout << "Stick it" << endl;
+                
+                Texcoord[i]->point[j*2  ] = magnets[active_magnet].x;
+                Texcoord[i]->point[j*2+1] = magnets[active_magnet].y;
+                if (bFix){
+                  Vertexes[i]->point[j*2  ] = magnets[active_magnet].x;
+                  Vertexes[i]->point[j*2+1] = magnets[active_magnet].y;
+                }
+              }
+            }
+          }
+        }
 			}
 		}
 		
@@ -730,17 +744,19 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 			if ((active_magnev < magnetv.size())&&(active_magnev > -1)&&(Sub_phase == SUB_MAGNET_MOVE)){
 				magnetv[active_magnev].x += (mouse.x - mx) / ver_w;
 				magnetv[active_magnev].y += (mouse.y - my) / ver_h;
-				
-				for (int i = 0;i < Vertexes.size();i++){
-					for (int j = 0;j < 3;j++){
-						if (ofDist(Vertexes[i]->point[j*2  ]*ver_w, 
-								   Vertexes[i]->point[j*2+1]*ver_h, 
-								   mouse.x-ver_x, mouse.y-ver_y) < 20){
-							Vertexes[i]->point[j*2  ] = magnetv[active_magnev].x;
-							Vertexes[i]->point[j*2+1] = magnetv[active_magnev].y;
-						}
-					}
-				}
+				if(!_no_more_magnets){
+          for (int i = 0;i < Vertexes.size();i++){
+            for (int j = 0;j < 3;j++){
+              if (ofDist(Vertexes[i]->point[j*2  ]*ver_w, 
+                         Vertexes[i]->point[j*2+1]*ver_h, 
+                         mouse.x-ver_x, mouse.y-ver_y) < _magnet_radius){
+                cout << "Stick it" << endl;
+                Vertexes[i]->point[j*2  ] = magnetv[active_magnev].x;
+                Vertexes[i]->point[j*2+1] = magnetv[active_magnev].y;
+              }
+            }
+          }
+        }
 			}
 		}
 
@@ -748,6 +764,32 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 	}
 	mx = mouse.x;
 	my = mouse.y;
+  }
+}
+
+void ofxMpplrScreen::maxNumber(int maxMagnets, int mouseX, int mouseY){
+  
+  int cpt = 0;
+  for (int i = 0;i < Texcoord.size();i++){
+    for (int j = 0;j < 3;j++){
+      if (ofDist(Texcoord[i]->point[j*2  ]*win_w, 
+                 Texcoord[i]->point[j*2+1]*win_h, 
+                 mouseX-win_x, mouseY-win_y) < 20){
+        Texcoord[i]->point[j*2  ] = magnets[active_magnet].x;
+        Texcoord[i]->point[j*2+1] = magnets[active_magnet].y;
+        if (bFix){
+          Vertexes[i]->point[j*2  ] = magnets[active_magnet].x;
+          Vertexes[i]->point[j*2+1] = magnets[active_magnet].y;
+        }
+        cpt++;
+      }
+    }
+  }
+  cout << "cpt = " << cpt << " maxMagnets : " << maxMagnets << " _no_more_magnets : " << _no_more_magnets << endl;
+  if (cpt >= maxMagnets){
+    _no_more_magnets = true;
+  }else{
+    _no_more_magnets = false;
   }
 }
 
@@ -765,8 +807,8 @@ void ofxMpplrScreen::mouseMoved(ofMouseEventArgs &mouse){
   _mouseX = mouse.x;
   _mouseY = mouse.y;
   
-  cout<<"helloMpplrScreenMove " << "x : " << mouse.x << " y : " << mouse.y <<endl;
-  cout<<"helloMpplrScreenMove " << "xvert : " << ver_y << " yvert : " << ver_y <<endl;
+  //cout<<"helloMpplrScreenMove " << "x : " << mouse.x << " y : " << mouse.y <<endl;
+  //cout<<"helloMpplrScreenMove " << "xvert : " << ver_y << " yvert : " << ver_y <<endl;
   
 	if ((win_x < mouse.x)&&(mouse.x < win_x+win_w)&&
 		(win_y < mouse.y)&&(mouse.y < win_y+win_h)) edit_Panel = PANEL_TEX;
@@ -781,6 +823,7 @@ void ofxMpplrScreen::mouseReleased(ofMouseEventArgs &mouse){
 	active_point[0] = -1;
 	active_point[1] = -1;
   _mousePressed = false;
+  _no_more_magnets = false;
 }
 
 void ofxMpplrScreen::keyPressed(ofKeyEventArgs &key){
@@ -803,10 +846,12 @@ void ofxMpplrScreen::keyPressed(ofKeyEventArgs &key){
 			if ((active_magnet != -1)&&(key.key == 127)&&(magnets.size() > 0)){
         cout << "magnets.size() : " << magnets.size() << endl;
 				magnets.erase(magnets.begin()+active_magnet);
+        _moving_magnet = 0;
 			}			
 		}else if (edit_Panel == PANEL_VER){
 			if ((active_magnev != -1)&&(key.key == 127)&&(magnetv.size() > 0)){
 				magnetv.erase(magnetv.begin()+active_magnev);
+        _moving_magnet = 0;
 			}
 		}
 	}
