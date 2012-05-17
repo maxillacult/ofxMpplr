@@ -31,6 +31,7 @@
 
 struct Triangle{
 	GLfloat point[6];
+  size_t pairedNumber;
 };
 
 class ofxMpplrScreen{
@@ -54,6 +55,7 @@ public:
 	void LoadXML(int num);
 	void SaveXML(int num);
 	void makeTriangles(Triangle tri);
+  void makeTriangles(Triangle tri1, Triangle tri2);
 
 	//Mouse & Key Events
 	void mousePressed(ofMouseEventArgs& mouse);
@@ -66,6 +68,8 @@ public:
   int getInMouseX();
   int getInMouseY();
   bool getInMousePressed();
+  void setMouseXY(int x, int y);
+  void setMode(int mode);
   
 	int Edit_phase;
 	int edit_Panel;
@@ -81,6 +85,7 @@ protected:
 	int active_triangle;
 	int active_magnet;
 	int active_magnev;
+  int _numberOfPair;
 	int ph;
 	float win_x,win_y,win_w,win_h;
 	float ver_x,ver_y,ver_w,ver_h;

@@ -50,9 +50,64 @@ void ofxMpplrScreen::makeTriangles(Triangle tri){
 	t2->point[3] = tri.point[3];
 	t2->point[4] = tri.point[4];
 	t2->point[5] = tri.point[5];
+	
+  t->pairedNumber=0;
+  t2->pairedNumber=0;
+  
+  Texcoord.push_back(t);
+	Vertexes.push_back(t2);
+  
+}
+
+void ofxMpplrScreen::makeTriangles(Triangle tri1, Triangle tri2){
+	Triangle* t = new Triangle;
+	Triangle* t2= new Triangle;
+	t->point[0] = tri1.point[0];
+	t->point[1] = tri1.point[1];
+	t->point[2] = tri1.point[2];
+	t->point[3] = tri1.point[3];
+	t->point[4] = tri1.point[4];
+	t->point[5] = tri1.point[5];
+	t2->point[0] = tri1.point[0];
+	t2->point[1] = tri1.point[1];
+	t2->point[2] = tri1.point[2];
+	t2->point[3] = tri1.point[3];
+	t2->point[4] = tri1.point[4];
+	t2->point[5] = tri1.point[5];
+  
+  t->pairedNumber = _numberOfPair;
+  t2->pairedNumber = _numberOfPair;
+  
 	Texcoord.push_back(t);
 	Vertexes.push_back(t2);
+  
+  Triangle* t3 = new Triangle;
+	Triangle* t4= new Triangle;
+	t->point[0] = tri2.point[0];
+	t->point[1] = tri2.point[1];
+	t->point[2] = tri2.point[2];
+	t->point[3] = tri2.point[3];
+	t->point[4] = tri2.point[4];
+	t->point[5] = tri2.point[5];
+	t2->point[0] = tri2.point[0];
+	t2->point[1] = tri2.point[1];
+	t2->point[2] = tri2.point[2];
+	t2->point[3] = tri2.point[3];
+	t2->point[4] = tri2.point[4];
+	t2->point[5] = tri2.point[5];
+  
+  t->pairedNumber = _numberOfPair;
+  t2->pairedNumber = _numberOfPair;
+  
+	Texcoord.push_back(t3);
+	Vertexes.push_back(t4);
+  
+  _numberOfPair++;
 }
+
+
+
+
 
 void ofxMpplrScreen::draw(float x,float y,float width,float height){
 	ver_x = x;
@@ -327,7 +382,6 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 			else if(Edit_phase == PHASE_RECTM)
 			{
 				message = "-- Make Rectangle";
-        cout << "getInMousePressed : " << getInMousePressed() << endl;
 				if (getInMousePressed() && !bRectReady){
 					if ((win_x < getInMouseX())&&(getInMouseX() < win_x+win_w)&&
 						(win_y < getInMouseY())&&(getInMouseY() < win_y+win_h)){
@@ -353,7 +407,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 					t2.point[4] = MAX(MIN(1.0f,(getInMouseX() - x) / width),0);
 					t2.point[5] = MAX(MIN(1.0f,(getInMouseY() - y) / height),0);
 					makeTriangles(t);
-					makeTriangles(t2);
+          makeTriangles(t2);
 				}
 				if (getInMousePressed()&&(bRectReady)){
 					ofSetHexColor(0xFFFFFF);
@@ -697,13 +751,23 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
   }
 }
 
+void ofxMpplrScreen::setMouseXY(int x, int y){
+  _mouseX = x;
+  _mouseY = y;
+}
+
+void ofxMpplrScreen::setMode(int mode){
+  edit_Panel = mode;
+}
+
 void ofxMpplrScreen::mouseMoved(ofMouseEventArgs &mouse){
   
   _mouseX = mouse.x;
   _mouseY = mouse.y;
   
-  //cout<<"helloMpplrScreenMove " << "x : " << mouse.x << "y : " << mouse.y <<endl;
-
+  cout<<"helloMpplrScreenMove " << "x : " << mouse.x << " y : " << mouse.y <<endl;
+  cout<<"helloMpplrScreenMove " << "xvert : " << ver_y << " yvert : " << ver_y <<endl;
+  
 	if ((win_x < mouse.x)&&(mouse.x < win_x+win_w)&&
 		(win_y < mouse.y)&&(mouse.y < win_y+win_h)) edit_Panel = PANEL_TEX;
 	else if ((ver_x < mouse.x)&&(mouse.x < ver_x+ver_w)&&
