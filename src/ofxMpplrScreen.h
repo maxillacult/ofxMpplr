@@ -15,6 +15,7 @@
 #define PHASE_PLATE 0x03
 #define PHASE_RECTM 0X04
 #define PHASE_MAGNE 0x05
+#define PHASE_NOEDIT 0x06
 
 #define SUB_POINT_MAKE 0x00
 #define SUB_POINT_MOVE 0x01
@@ -30,6 +31,7 @@
 
 struct Triangle{
 	GLfloat point[6];
+  size_t pairedNumber;
 };
 
 class ofxMpplrScreen{
@@ -46,12 +48,16 @@ public:
 	void draw(float x,float y,float width,float height);
 	//Draw rect Image
 	void drawBuffer(float x,float y,float width,float height);
-	
+	//Draw OutPutImage
+  void drawOutPut(float x,float y,float width,float height);
+  
 	//Other sub functions
 	void LoadXML(int num);
 	void SaveXML(int num);
 	void makeTriangles(Triangle tri);
-
+  void makeTriangles(Triangle tri1, Triangle tri2);
+  void maxNumber(int num, int mouseX, int mouseY);
+  
 	//Mouse & Key Events
 	void mousePressed(ofMouseEventArgs& mouse);
 	void mouseDragged(ofMouseEventArgs& mouse);
@@ -60,12 +66,21 @@ public:
 	void keyPressed(ofKeyEventArgs  &key);
 	void keyReleased(ofKeyEventArgs &key);
 	
+  
+  int getInMouseX();
+  int getInMouseY();
+  bool getInMousePressed();
+  void setMouseXY(int x, int y);
+  void setMode(int mode);
+  
 	int Edit_phase;
 	int edit_Panel;
 	int Sub_phase;
 	int loaden;
+  int _magnet_radius;
 	bool bFix;
 	bool bDebug;
+  bool bCanEdit;
 	
 protected:
 	//deques can use param pct of screen width/height 0.0f~1.0f
@@ -73,10 +88,19 @@ protected:
 	int active_triangle;
 	int active_magnet;
 	int active_magnev;
+  int _numberOfPair;
 	int ph;
 	float win_x,win_y,win_w,win_h;
 	float ver_x,ver_y,ver_w,ver_h;
 	int mx,my;
+  int _mouseX;
+  int _mouseY;
+  bool _mousePressed;
+  bool _no_more_magnets;
+  int _moving_magnet;
+  int _maximum_moving_magnet;
+  int _bufferWidth;
+  int _bufferHeight;
 	
 	Triangle Stock;
 	deque <Triangle*> Texcoord;

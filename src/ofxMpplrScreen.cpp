@@ -9,6 +9,8 @@
 #include "ofxMpplrScreen.h"
 
 void ofxMpplrScreen::setup(int width, int height){
+  _bufferWidth = width;
+  _bufferHeight = height;
 	buffer.allocate(width, height,GL_RGBA,1);
 	buffer.begin();
 	glClearColor(0, 0, 0, 1.0f);
@@ -25,6 +27,10 @@ void ofxMpplrScreen::setup(int width, int height){
 	bFix = true;
 	edit_Panel = PANEL_TEX;
 	loaden = -1;
+  _maximum_moving_magnet = 3;
+  _moving_magnet = 0;
+  _no_more_magnets = false;
+  _magnet_radius = 6;
 }
 
 void ofxMpplrScreen::Begin(){
@@ -50,9 +56,64 @@ void ofxMpplrScreen::makeTriangles(Triangle tri){
 	t2->point[3] = tri.point[3];
 	t2->point[4] = tri.point[4];
 	t2->point[5] = tri.point[5];
+	
+  t->pairedNumber=0;
+  t2->pairedNumber=0;
+  
+  Texcoord.push_back(t);
+	Vertexes.push_back(t2);
+  
+}
+
+void ofxMpplrScreen::makeTriangles(Triangle tri1, Triangle tri2){
+	Triangle* t = new Triangle;
+	Triangle* t2= new Triangle;
+	t->point[0] = tri1.point[0];
+	t->point[1] = tri1.point[1];
+	t->point[2] = tri1.point[2];
+	t->point[3] = tri1.point[3];
+	t->point[4] = tri1.point[4];
+	t->point[5] = tri1.point[5];
+	t2->point[0] = tri1.point[0];
+	t2->point[1] = tri1.point[1];
+	t2->point[2] = tri1.point[2];
+	t2->point[3] = tri1.point[3];
+	t2->point[4] = tri1.point[4];
+	t2->point[5] = tri1.point[5];
+  
+  t->pairedNumber = _numberOfPair;
+  t2->pairedNumber = _numberOfPair;
+  
 	Texcoord.push_back(t);
 	Vertexes.push_back(t2);
+  
+  Triangle* t3 = new Triangle;
+	Triangle* t4= new Triangle;
+	t->point[0] = tri2.point[0];
+	t->point[1] = tri2.point[1];
+	t->point[2] = tri2.point[2];
+	t->point[3] = tri2.point[3];
+	t->point[4] = tri2.point[4];
+	t->point[5] = tri2.point[5];
+	t2->point[0] = tri2.point[0];
+	t2->point[1] = tri2.point[1];
+	t2->point[2] = tri2.point[2];
+	t2->point[3] = tri2.point[3];
+	t2->point[4] = tri2.point[4];
+	t2->point[5] = tri2.point[5];
+  
+  t->pairedNumber = _numberOfPair;
+  t2->pairedNumber = _numberOfPair;
+  
+	Texcoord.push_back(t3);
+	Vertexes.push_back(t4);
+  
+  _numberOfPair++;
 }
+
+
+
+
 
 void ofxMpplrScreen::draw(float x,float y,float width,float height){
 	ver_x = x;
@@ -62,25 +123,25 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 	string message = "";
 	
 	glPushMatrix();
-	glTranslatef(x, y, 0.0f);
-	buffer.getTextureReference().bind();
-	glBegin(GL_TRIANGLES);
-	for (int i = 0;i < Vertexes.size();i++){
-		glTexCoord2f(Texcoord[i]->point[0]*width,
-					 Texcoord[i]->point[1]*height);
-		glVertex2f(Vertexes[i]->point[0]*width, 
-				   Vertexes[i]->point[1]*height);
-		glTexCoord2f(Texcoord[i]->point[2]*width,
-					 Texcoord[i]->point[3]*height);
-		glVertex2f(Vertexes[i]->point[2]*width, 
-				   Vertexes[i]->point[3]*height);
-		glTexCoord2f(Texcoord[i]->point[4]*width,
-					 Texcoord[i]->point[5]*height);
-		glVertex2f(Vertexes[i]->point[4]*width, 
-				   Vertexes[i]->point[5]*height);
-	}
-	glEnd();
-	buffer.getTextureReference().unbind();
+    glTranslatef(x, y, 0.0f);
+    buffer.getTextureReference().bind();
+      glBegin(GL_TRIANGLES);
+        for (int i = 0;i < Vertexes.size();i++){
+          glTexCoord2f(Texcoord[i]->point[0]*width,
+                       Texcoord[i]->point[1]*height);
+          glVertex2f(Vertexes[i]->point[0]*width, 
+                     Vertexes[i]->point[1]*height);
+          glTexCoord2f(Texcoord[i]->point[2]*width,
+                       Texcoord[i]->point[3]*height);
+          glVertex2f(Vertexes[i]->point[2]*width, 
+                     Vertexes[i]->point[3]*height);
+          glTexCoord2f(Texcoord[i]->point[4]*width,
+                       Texcoord[i]->point[5]*height);
+          glVertex2f(Vertexes[i]->point[4]*width, 
+                     Vertexes[i]->point[5]*height);
+        }
+      glEnd();
+    buffer.getTextureReference().unbind();
 	glPopMatrix();
 	
 	if (bDebug){
@@ -125,7 +186,7 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 					for (int j = 0;j < 3;j++){
 						if (ofDist(Vertexes[i]->point[j*2  ]*width, 
 								   Vertexes[i]->point[j*2+1]*height, 
-								   ofGetMouseX()-x, ofGetMouseY()-y) < 10){
+								   getInMouseX()-x, getInMouseY()-y) < 10){
 							Sub_phase = SUB_POINT_MOVE;
 							ofSetHexColor(0xFF0000);
 							ofNoFill();
@@ -161,7 +222,7 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 					
 					if (ofDist(magnetv[i].x*width, 
 							   magnetv[i].y*height, 
-							   ofGetMouseX()-x, ofGetMouseY()-y) < 10){
+							   getInMouseX()-x, getInMouseY()-y) < 10){
 						Sub_phase = SUB_MAGNET_MOVE;
 						message = "-- Move magnet";
 						ofSetHexColor(0xaa33FF);
@@ -182,9 +243,48 @@ void ofxMpplrScreen::draw(float x,float y,float width,float height){
 		ofFill();
 		glPopMatrix();
 		ofSetHexColor(0xFFFFFF);
-		ofDrawBitmapString(message, ofGetMouseX()+12, ofGetMouseY()+4);
+    
+    //cout << "***** " << "getInMouseX() : " << getInMouseX() << " getInMouseY() : " << getInMouseY() << endl;
+		ofDrawBitmapString(message, getInMouseX()+12, getInMouseY()+4);
 	}
+}
 
+void ofxMpplrScreen::drawOutPut(float x,float y,float width,float height){
+  glPushMatrix();
+    glTranslatef(x, y, 0.0f);
+      buffer.getTextureReference().bind();
+        glBegin(GL_TRIANGLES);
+          for (int i = 0;i < Vertexes.size();i++){
+            glTexCoord2f(Texcoord[i]->point[0]*_bufferWidth,
+                         Texcoord[i]->point[1]*_bufferHeight);
+            glVertex2f(Vertexes[i]->point[0]*_bufferWidth, 
+                       Vertexes[i]->point[1]*_bufferHeight);
+            glTexCoord2f(Texcoord[i]->point[2]*_bufferWidth,
+                         Texcoord[i]->point[3]*_bufferHeight);
+            glVertex2f(Vertexes[i]->point[2]*_bufferWidth, 
+                       Vertexes[i]->point[3]*_bufferHeight);
+            glTexCoord2f(Texcoord[i]->point[4]*_bufferWidth,
+                         Texcoord[i]->point[5]*_bufferHeight);
+            glVertex2f(Vertexes[i]->point[4]*_bufferWidth, 
+                       Vertexes[i]->point[5]*_bufferHeight);
+          }
+        glEnd();
+      buffer.getTextureReference().unbind();
+	glPopMatrix();
+}
+
+
+
+int ofxMpplrScreen::getInMouseX(){
+  return _mouseX;
+}
+
+int ofxMpplrScreen::getInMouseY(){
+  return _mouseY;
+}
+
+bool ofxMpplrScreen::getInMousePressed(){
+  return _mousePressed;
 }
 
 void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
@@ -245,7 +345,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 					for (int j = 0;j < 3;j++){
 						if (ofDist(Texcoord[i]->point[j*2  ]*width, 
 								   Texcoord[i]->point[j*2+1]*height, 
-								   ofGetMouseX()-x, ofGetMouseY()-y) < 10){
+								   getInMouseX()-x, getInMouseY()-y) < 10){
 							message = "-- Move point";
 							Sub_phase = SUB_POINT_MOVE;
 							ofSetHexColor(0xFF0000);
@@ -269,36 +369,37 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 			else if(Edit_phase == PHASE_RECTM)
 			{
 				message = "-- Make Rectangle";
-				if (ofGetMousePressed() && !bRectReady){
-					if ((win_x < ofGetMouseX())&&(ofGetMouseX() < win_x+win_w)&&
-						(win_y < ofGetMouseY())&&(ofGetMouseY() < win_y+win_h)){
+				if (getInMousePressed() && !bRectReady){
+					if ((win_x < getInMouseX())&&(getInMouseX() < win_x+win_w)&&
+						(win_y < getInMouseY())&&(getInMouseY() < win_y+win_h)){
+            cout << "traceRect "<< endl;
 						bRectReady = true;
-						rect_top = ofPoint(ofGetMouseX(),ofGetMouseY());
+						rect_top = ofPoint(getInMouseX(),getInMouseY());
 					}
 				}
-				if (!ofGetMousePressed() && bRectReady){
+				if (!getInMousePressed() && bRectReady){
 					bRectReady = false;
 					Triangle t,t2;
 					t.point[0] = MAX(MIN(1.0f,(rect_top.x - x) / width),0);
 					t.point[1] = MAX(MIN(1.0f,(rect_top.y - y) / height),0);
 					t.point[2] = MAX(MIN(1.0f,(rect_top.x - x) / width),0);
-					t.point[3] = MAX(MIN(1.0f,(ofGetMouseY() - y) / height),0);
-					t.point[4] = MAX(MIN(1.0f,(ofGetMouseX() - x) / width),0);
+					t.point[3] = MAX(MIN(1.0f,(getInMouseY() - y) / height),0);
+					t.point[4] = MAX(MIN(1.0f,(getInMouseX() - x) / width),0);
 					t.point[5] = MAX(MIN(1.0f,(rect_top.y - y) / height),0);
 					
 					t2.point[0] = t.point[4];
 					t2.point[1] = t.point[5];
 					t2.point[2] = t.point[2];
 					t2.point[3] = t.point[3];
-					t2.point[4] = MAX(MIN(1.0f,(ofGetMouseX() - x) / width),0);
-					t2.point[5] = MAX(MIN(1.0f,(ofGetMouseY() - y) / height),0);
+					t2.point[4] = MAX(MIN(1.0f,(getInMouseX() - x) / width),0);
+					t2.point[5] = MAX(MIN(1.0f,(getInMouseY() - y) / height),0);
 					makeTriangles(t);
-					makeTriangles(t2);
+          makeTriangles(t2);
 				}
-				if (ofGetMousePressed()&&(bRectReady)){
+				if (getInMousePressed()&&(bRectReady)){
 					ofSetHexColor(0xFFFFFF);
 					ofNoFill();
-					ofRect(rect_top.x - x, rect_top.y - y, ofGetMouseX() - rect_top.x, ofGetMouseY() - rect_top.y);
+					ofRect(rect_top.x - x, rect_top.y - y, getInMouseX() - rect_top.x, getInMouseY() - rect_top.y);
 					ofFill();
 				}
 			}
@@ -323,7 +424,7 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 					
 					if (ofDist(magnets[i].x*width, 
 								magnets[i].y*height, 
-								ofGetMouseX()-x, ofGetMouseY()-y) < 10){
+								getInMouseX()-x, getInMouseY()-y) < 10){
 						message = "-- Move Magnet";
 						Sub_phase = SUB_MAGNET_MOVE;
 						ofSetHexColor(0xaa33FF);
@@ -340,7 +441,9 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 			}
 			
 			ofSetHexColor(0xFFFFFF);
-			ofDrawBitmapString(message, ofGetMouseX()+12, ofGetMouseY()+4);
+      
+//      cout << "***** " << "getInMouseX() : " << getInMouseX() << " getInMouseY() : " << getInMouseY() << endl;
+			ofDrawBitmapString(message, getInMouseX()+12, getInMouseY()+4);
 		}else{
 			ofSetColor(0, 0, 0,100);
 			ofRect(0, 0, width, height);
@@ -355,7 +458,14 @@ void ofxMpplrScreen::drawBuffer(float x, float y, float width, float height){
 }
 
 void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
-	if (!bDebug) return;
+  if(bCanEdit){
+  _mousePressed = true;
+  _mouseX = mouse.x;
+  _mouseY = mouse.y;
+  
+  //cout<<"helloMpplrScreenPressed " << "x : " << mouse.x << "y : " << mouse.y <<endl;
+	
+  if (!bDebug) return;
 	if (edit_Panel == PANEL_TEX){
 		if (Edit_phase == PHASE_POINT){
 			if (Sub_phase == SUB_POINT_MAKE){
@@ -385,8 +495,8 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 				y2 = Texcoord[i]->point[3];
 				x3 = Texcoord[i]->point[4];
 				y3 = Texcoord[i]->point[5];
-				x4 = (ofGetMouseX() - win_x) / win_w;
-				y4 = (ofGetMouseY() - win_y) / win_h;
+				x4 = (getInMouseX() - win_x) / win_w;
+				y4 = (getInMouseY() - win_y) / win_h;
 				
 				if ((x4*(y1-y2)+x1*(y2-y4)+x2*(y4-y1) > 0) &&
 					(x4*(y2-y3)+x2*(y3-y4)+x3*(y4-y2) > 0) &&
@@ -405,6 +515,7 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 				p.x = (mouse.x - win_x) / win_w;
 				p.y = (mouse.y - win_y) / win_h;
 				magnets.push_back(p);
+        _moving_magnet = 0;
 				active_magnet = magnets.size()-1;
 				for (int i = 0;i < Texcoord.size();i++){
 					for (int j = 0;j < 3;j++){
@@ -423,6 +534,7 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 							   magnets[i].y*win_h, 
 							   mouse.x-win_x, mouse.y-win_y) < 10){
 						active_magnet = i;
+            _moving_magnet = 0;
 					}
 				}
 			}
@@ -440,8 +552,8 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 				y2 = Vertexes[i]->point[3];
 				x3 = Vertexes[i]->point[4];
 				y3 = Vertexes[i]->point[5];
-				x4 = (ofGetMouseX() - ver_x) / ver_w;
-				y4 = (ofGetMouseY() - ver_y) / ver_h;
+				x4 = (getInMouseX() - ver_x) / ver_w;
+				y4 = (getInMouseY() - ver_y) / ver_h;
 				
 				if ((x4*(y1-y2)+x1*(y2-y4)+x2*(y4-y1) > 0) &&
 					(x4*(y2-y3)+x2*(y3-y4)+x3*(y4-y2) > 0) &&
@@ -486,9 +598,18 @@ void ofxMpplrScreen::mousePressed(ofMouseEventArgs &mouse){
 	}
 	mx = mouse.x;
 	my = mouse.y;
+  }
 }
 
 void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
+  if(bCanEdit){
+  //cout<<"helloMpplrScreenDragged " << "x : " << mouse.x << "y : " << mouse.y <<endl;
+  
+  //maxNumber(3, mouse.x, mouse.y);  
+    
+  _mouseX = mouse.x;
+  _mouseY = mouse.y;
+  
 		if (!bDebug) return;
 	if (edit_Panel == PANEL_TEX){
 		if (Edit_phase == PHASE_POINT){
@@ -497,7 +618,7 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 					for (int j = 0;j < 3;j++){
 						if (ofDist(Texcoord[i]->point[j*2  ]*win_w, 
 								   Texcoord[i]->point[j*2+1]*win_h, 
-								   ofGetMouseX()-win_x, ofGetMouseY()-win_y) < 10){
+								   getInMouseX()-win_x, getInMouseY()-win_y) < 10){
 							if ((active_point[0] == -1)&&(active_point[1] == -1)){
 								active_point[0] = i;
 								active_point[1] = j;
@@ -541,21 +662,27 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 			if ((active_magnet < magnets.size())&&(active_magnet > -1)&&(Sub_phase == SUB_MAGNET_MOVE)){
 				magnets[active_magnet].x += (mouse.x - mx) / win_w;
 				magnets[active_magnet].y += (mouse.y - my) / win_h;
-				
-				for (int i = 0;i < Texcoord.size();i++){
-					for (int j = 0;j < 3;j++){
-						if (ofDist(Texcoord[i]->point[j*2  ]*win_w, 
-								   Texcoord[i]->point[j*2+1]*win_h, 
-								   mouse.x-win_x, mouse.y-win_y) < 20){
-							Texcoord[i]->point[j*2  ] = magnets[active_magnet].x;
-							Texcoord[i]->point[j*2+1] = magnets[active_magnet].y;
-							if (bFix){
-								Vertexes[i]->point[j*2  ] = magnets[active_magnet].x;
-								Vertexes[i]->point[j*2+1] = magnets[active_magnet].y;
-							}
-						}
-					}
-				}
+
+        if(!_no_more_magnets){
+          //cout << "max ok : " << _moving_magnet << " < " << _maximum_moving_magnet << endl;
+          for (int i = 0;i < Texcoord.size();i++){
+            for (int j = 0;j < 3;j++){
+              if (ofDist(Texcoord[i]->point[j*2  ]*win_w, 
+                       Texcoord[i]->point[j*2+1]*win_h, 
+                       mouse.x-win_x, mouse.y-win_y) < _magnet_radius){
+                
+                                cout << "Stick it" << endl;
+                
+                Texcoord[i]->point[j*2  ] = magnets[active_magnet].x;
+                Texcoord[i]->point[j*2+1] = magnets[active_magnet].y;
+                if (bFix){
+                  Vertexes[i]->point[j*2  ] = magnets[active_magnet].x;
+                  Vertexes[i]->point[j*2+1] = magnets[active_magnet].y;
+                }
+              }
+            }
+          }
+        }
 			}
 		}
 		
@@ -567,7 +694,7 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 					for (int j = 0;j < 3;j++){
 						if (ofDist(Vertexes[i]->point[j*2  ]*ver_w, 
 								   Vertexes[i]->point[j*2+1]*ver_h, 
-								   ofGetMouseX()-ver_x, ofGetMouseY()-ver_y) < 10){
+								   getInMouseX()-ver_x, getInMouseY()-ver_y) < 10){
 							if ((active_point[0] == -1)&&(active_point[1] == -1)){
 								active_point[0] = i;
 								active_point[1] = j;
@@ -600,17 +727,19 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 			if ((active_magnev < magnetv.size())&&(active_magnev > -1)&&(Sub_phase == SUB_MAGNET_MOVE)){
 				magnetv[active_magnev].x += (mouse.x - mx) / ver_w;
 				magnetv[active_magnev].y += (mouse.y - my) / ver_h;
-				
-				for (int i = 0;i < Vertexes.size();i++){
-					for (int j = 0;j < 3;j++){
-						if (ofDist(Vertexes[i]->point[j*2  ]*ver_w, 
-								   Vertexes[i]->point[j*2+1]*ver_h, 
-								   mouse.x-ver_x, mouse.y-ver_y) < 20){
-							Vertexes[i]->point[j*2  ] = magnetv[active_magnev].x;
-							Vertexes[i]->point[j*2+1] = magnetv[active_magnev].y;
-						}
-					}
-				}
+				if(!_no_more_magnets){
+          for (int i = 0;i < Vertexes.size();i++){
+            for (int j = 0;j < 3;j++){
+              if (ofDist(Vertexes[i]->point[j*2  ]*ver_w, 
+                         Vertexes[i]->point[j*2+1]*ver_h, 
+                         mouse.x-ver_x, mouse.y-ver_y) < _magnet_radius){
+                cout << "Stick it" << endl;
+                Vertexes[i]->point[j*2  ] = magnetv[active_magnev].x;
+                Vertexes[i]->point[j*2+1] = magnetv[active_magnev].y;
+              }
+            }
+          }
+        }
 			}
 		}
 
@@ -618,21 +747,66 @@ void ofxMpplrScreen::mouseDragged(ofMouseEventArgs &mouse){
 	}
 	mx = mouse.x;
 	my = mouse.y;
+  }
+}
+
+void ofxMpplrScreen::maxNumber(int maxMagnets, int mouseX, int mouseY){
+  
+  int cpt = 0;
+  for (int i = 0;i < Texcoord.size();i++){
+    for (int j = 0;j < 3;j++){
+      if (ofDist(Texcoord[i]->point[j*2  ]*win_w, 
+                 Texcoord[i]->point[j*2+1]*win_h, 
+                 mouseX-win_x, mouseY-win_y) < 20){
+        Texcoord[i]->point[j*2  ] = magnets[active_magnet].x;
+        Texcoord[i]->point[j*2+1] = magnets[active_magnet].y;
+        if (bFix){
+          Vertexes[i]->point[j*2  ] = magnets[active_magnet].x;
+          Vertexes[i]->point[j*2+1] = magnets[active_magnet].y;
+        }
+        cpt++;
+      }
+    }
+  }
+  cout << "cpt = " << cpt << " maxMagnets : " << maxMagnets << " _no_more_magnets : " << _no_more_magnets << endl;
+  if (cpt >= maxMagnets){
+    _no_more_magnets = true;
+  }else{
+    _no_more_magnets = false;
+  }
+}
+
+void ofxMpplrScreen::setMouseXY(int x, int y){
+  _mouseX = x;
+  _mouseY = y;
+}
+
+void ofxMpplrScreen::setMode(int mode){
+  edit_Panel = mode;
 }
 
 void ofxMpplrScreen::mouseMoved(ofMouseEventArgs &mouse){
+  
+  _mouseX = mouse.x;
+  _mouseY = mouse.y;
+  
+  //cout<<"helloMpplrScreenMove " << "x : " << mouse.x << " y : " << mouse.y <<endl;
+  //cout<<"helloMpplrScreenMove " << "xvert : " << ver_y << " yvert : " << ver_y <<endl;
+  
 	if ((win_x < mouse.x)&&(mouse.x < win_x+win_w)&&
 		(win_y < mouse.y)&&(mouse.y < win_y+win_h)) edit_Panel = PANEL_TEX;
 	else if ((ver_x < mouse.x)&&(mouse.x < ver_x+ver_w)&&
 			 (ver_y < mouse.y)&&(mouse.y < ver_y+ver_h)) edit_Panel = PANEL_VER;
 	else 
 		edit_Panel = PANEL_NONE;
-
+  
 }
 
 void ofxMpplrScreen::mouseReleased(ofMouseEventArgs &mouse){
 	active_point[0] = -1;
 	active_point[1] = -1;
+  _mousePressed = false;
+  _no_more_magnets = false;
 }
 
 void ofxMpplrScreen::keyPressed(ofKeyEventArgs &key){
@@ -644,7 +818,7 @@ void ofxMpplrScreen::keyPressed(ofKeyEventArgs &key){
 		}
 	}
 	if (Edit_phase == PHASE_PLATE){
-		if ((active_triangle != -1)&&(key.key == 127)){
+		if ((active_triangle != -1)&&(key.key == 127)&&(Texcoord.size() > 0)&&(Vertexes.size() > 0)){
 			Texcoord.erase(Texcoord.begin()+active_triangle);
 			Vertexes.erase(Vertexes.begin()+active_triangle);
 			active_triangle = -1;
@@ -652,12 +826,15 @@ void ofxMpplrScreen::keyPressed(ofKeyEventArgs &key){
 	}
 	if (Edit_phase == PHASE_MAGNE){
 		if (edit_Panel == PANEL_TEX){
-			if ((active_magnet != -1)&&(key.key == 127)){
+			if ((active_magnet != -1)&&(key.key == 127)&&(magnets.size() > 0)){
+        cout << "magnets.size() : " << magnets.size() << endl;
 				magnets.erase(magnets.begin()+active_magnet);
+        _moving_magnet = 0;
 			}			
 		}else if (edit_Panel == PANEL_VER){
-			if ((active_magnev != -1)&&(key.key == 127)){
+			if ((active_magnev != -1)&&(key.key == 127)&&(magnetv.size() > 0)){
 				magnetv.erase(magnetv.begin()+active_magnev);
+        _moving_magnet = 0;
 			}
 		}
 	}

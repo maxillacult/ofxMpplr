@@ -40,7 +40,19 @@ void ofxMpplrController::draw(int x, int y){
 	
 	ofSetHexColor(0xFFFFFF);
 	image.draw(0,0);
-
+  
+  //adding on/off button for mapping edition
+  ofSetHexColor(0xFFFFFF);
+  ofNoFill();
+    ofRect(240, 0, 40, 40);
+    ofRect(250, 10, 20, 20);
+  ofFill();
+  
+  if (child->bCanEdit == true) {
+      ofSetHexColor(0x00ccff);
+      ofRect(250, 10, 20, 20);
+  }
+  
 	ofEnableBlendMode(OF_BLENDMODE_ADD);
 	ofSetHexColor(0x660000);
 	if (child->Edit_phase == PHASE_POINT) ofRect(  0, 0, 40, 40);
@@ -86,6 +98,9 @@ void ofxMpplrController::draw(int x, int y){
 		case 6:
 			message = "-- Fix";
 			break;
+    case 7:
+			message = "-- Edit";
+			break;  
 			
 		default:
 			break;
@@ -101,7 +116,7 @@ void ofxMpplrController::draw(int x, int y){
 void ofxMpplrController::mousePressed(ofMouseEventArgs &mouse){
 	int touched = -1;
 	if ((win_y < mouse.y)&&(mouse.y < win_y+40)){
-		touched = MIN(5,MAX((mouse.x - win_x)/40,0));
+		touched = MIN(6,MAX((mouse.x - win_x)/40,0));
 	}
 	switch (touched) {
 		case 0:
@@ -121,6 +136,9 @@ void ofxMpplrController::mousePressed(ofMouseEventArgs &mouse){
 			break;
 		case 5:
 			child->bFix = !child->bFix;
+			break;
+    case 6:
+			child->bCanEdit = !child->bCanEdit;;
 			break;
 		default:
 			break;
@@ -144,7 +162,7 @@ void ofxMpplrController::mouseDragged(ofMouseEventArgs &mouse){
 void ofxMpplrController::mouseMoved(ofMouseEventArgs &mouse){
 	int touched = -1;
 	if ((win_y < mouse.y)&&(mouse.y < win_y+40)){
-		touched = MIN(5,MAX((mouse.x - win_x)/40,0));
+		touched = MIN(6,MAX((mouse.x - win_x)/40,0));
 	}
 	typeMessage = touched+1;
 }
@@ -158,6 +176,7 @@ void ofxMpplrController::keyPressed(ofKeyEventArgs &key){
 	if (key.key == 'x') child->Edit_phase = PHASE_RECTM;
 	if (key.key == 'c') child->Edit_phase = PHASE_PLATE;
 	if (key.key == 'v') child->Edit_phase = PHASE_MAGNE;
+  if (key.key == 'a') child->bCanEdit = !child->bCanEdit;
 	if (key.key == 'b') child->bDebug = !child->bDebug;
 	if (key.key == 'n') child->bFix = !child->bFix;
 }
