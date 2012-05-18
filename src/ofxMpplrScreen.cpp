@@ -9,6 +9,8 @@
 #include "ofxMpplrScreen.h"
 
 void ofxMpplrScreen::setup(int width, int height){
+  _bufferWidth = width;
+  _bufferHeight = height;
 	buffer.allocate(width, height,GL_RGBA,1);
 	buffer.begin();
 	glClearColor(0, 0, 0, 1.0f);
@@ -253,37 +255,18 @@ void ofxMpplrScreen::drawOutPut(float x,float y,float width,float height){
       buffer.getTextureReference().bind();
         glBegin(GL_TRIANGLES);
           for (int i = 0;i < Vertexes.size();i++){
-            if(ofGetWindowMode() == OF_FULLSCREEN){
-              ofPoint size = ofGetWindowSize();
-              //cout << "size.x : " << size.x << "size.y : " << size.y << endl;
-              
-              glTexCoord2f(Texcoord[i]->point[0]*size.x,
-                           Texcoord[i]->point[1]*size.y);
-              glVertex2f(Vertexes[i]->point[0]*size.x, 
-                         Vertexes[i]->point[1]*size.y);
-              glTexCoord2f(Texcoord[i]->point[2]*size.x,
-                           Texcoord[i]->point[3]*size.y);
-              glVertex2f(Vertexes[i]->point[2]*size.x, 
-                         Vertexes[i]->point[3]*size.y);
-              glTexCoord2f(Texcoord[i]->point[4]*size.x,
-                           Texcoord[i]->point[5]*size.y);
-              glVertex2f(Vertexes[i]->point[4]*size.x, 
-                         Vertexes[i]->point[5]*size.y);
-              
-            }else{
-            glTexCoord2f(Texcoord[i]->point[0]*width,
-                         Texcoord[i]->point[1]*height);
-            glVertex2f(Vertexes[i]->point[0]*width, 
-                       Vertexes[i]->point[1]*height);
-            glTexCoord2f(Texcoord[i]->point[2]*width,
-                         Texcoord[i]->point[3]*height);
-            glVertex2f(Vertexes[i]->point[2]*width, 
-                       Vertexes[i]->point[3]*height);
-            glTexCoord2f(Texcoord[i]->point[4]*width,
-                         Texcoord[i]->point[5]*height);
-            glVertex2f(Vertexes[i]->point[4]*width, 
-                       Vertexes[i]->point[5]*height);
-            }
+            glTexCoord2f(Texcoord[i]->point[0]*_bufferWidth,
+                         Texcoord[i]->point[1]*_bufferHeight);
+            glVertex2f(Vertexes[i]->point[0]*_bufferWidth, 
+                       Vertexes[i]->point[1]*_bufferHeight);
+            glTexCoord2f(Texcoord[i]->point[2]*_bufferWidth,
+                         Texcoord[i]->point[3]*_bufferHeight);
+            glVertex2f(Vertexes[i]->point[2]*_bufferWidth, 
+                       Vertexes[i]->point[3]*_bufferHeight);
+            glTexCoord2f(Texcoord[i]->point[4]*_bufferWidth,
+                         Texcoord[i]->point[5]*_bufferHeight);
+            glVertex2f(Vertexes[i]->point[4]*_bufferWidth, 
+                       Vertexes[i]->point[5]*_bufferHeight);
           }
         glEnd();
       buffer.getTextureReference().unbind();

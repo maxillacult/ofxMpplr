@@ -99,6 +99,8 @@ protected:
   bool _no_more_magnets;
   int _moving_magnet;
   int _maximum_moving_magnet;
+  int _bufferWidth;
+  int _bufferHeight;
 	
 	Triangle Stock;
 	deque <Triangle*> Texcoord;
